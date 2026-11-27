@@ -50,7 +50,7 @@ Under **Thử trạng thái** (Test states), select **Làm việc** (Working), *
 
 [Claude Code hooks reference](https://code.claude.com/docs/en/hooks) · [Codex hooks reference](https://learn.chatgpt.com/docs/hooks)
 
-The most recent active tool controls the lamp. The app tracks one active tool and does not track individual conversation IDs. Completion and error cues return to silent waiting after four seconds.
+The most recent active tool controls the lamp. The app tracks one active tool and does not track individual conversation IDs. Completion and error cues return to silent waiting after four seconds. In the desktop app, **Tự tắt đèn sau 5 phút chờ** (Turn off after 5 minutes of waiting) is on by default. A new waiting event restarts the timer, and hooks continue to update the lamp after it turns off. You can disable the setting under **Thiết bị** (Device).
 
 ## Privacy and runtime behavior
 

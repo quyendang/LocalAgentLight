@@ -80,7 +80,7 @@ struct DesktopView: View {
                 HStack(alignment: .top, spacing: 18) {
                     StatusPanel(state: model.state, source: model.source, confirmation: model.confirmation, mode: model.mode)
                         .frame(maxWidth: .infinity)
-                    VStack(alignment: .leading, spacing: 15) {
+                    VStack(alignment: .leading, spacing: 11) {
                         Label("Thiết bị", systemImage: "lightbulb")
                             .font(.headline)
                         Text(deviceName)
@@ -96,6 +96,10 @@ struct DesktopView: View {
                         Spacer(minLength: 0)
                         Divider().overlay(line)
                         Toggle("Tắt tiếng báo", systemImage: "speaker.slash", isOn: $model.silent)
+                            .toggleStyle(.switch)
+                            .tint(accent)
+                            .font(.callout)
+                        Toggle("Tự tắt đèn sau 5 phút chờ", isOn: $model.autoOff)
                             .toggleStyle(.switch)
                             .tint(accent)
                             .font(.callout)

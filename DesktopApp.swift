@@ -4,6 +4,8 @@ import SwiftUI
 
 @MainActor
 final class DesktopModel: ObservableObject {
+    private static let autoOffDelay: TimeInterval = 5 * 60
+
     @Published private(set) var state: LightState = .idle
     @Published private(set) var source = "Chưa có sự kiện"
     @Published private(set) var connected = false
@@ -18,6 +20,12 @@ final class DesktopModel: ObservableObject {
         didSet {
             UserDefaults.standard.set(silent, forKey: "desktopSilent")
             session?.silent = silent
+        }
+    }
+    @Published var autoOff = UserDefaults.standard.object(forKey: "desktopAutoOff") as? Bool ?? true {
+        didSet {
+            UserDefaults.standard.set(autoOff, forKey: "desktopAutoOff")
+            session?.waitingTimeout = autoOff ? Self.autoOffDelay : nil
         }
     }
 
@@ -65,7 +73,8 @@ final class DesktopModel: ObservableObject {
         source = "Chưa có sự kiện"
         connectionMessage = "Đang chờ kết nối Bluetooth."
         do {
-            let handle = try LightSession(mode: mode, silent: silent)
+            let handle = try LightSession(mode: mode, silent: silent,
+                                          waitingTimeout: autoOff ? Self.autoOffDelay : nil)
             handle.onLink = { [weak self] connected, message in
                 self?.connected = connected
                 self?.connectionMessage = message

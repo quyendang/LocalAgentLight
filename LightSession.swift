@@ -20,6 +20,12 @@ final class LightSession {
     var onLink: ((Bool, String) -> Void)?
     var onAcknowledgment: ((LightState) -> Void)?
 
+    var waitingTimeout: TimeInterval? {
+        didSet {
+            if !shuttingDown, lastState == .waiting { scheduleWaitingTimeout() }
+        }
+    }
+
     var silent: Bool {
         didSet {
             bluetooth?.silent = silent
@@ -27,8 +33,9 @@ final class LightSession {
         }
     }
 
-    init(mode: LightMode, silent: Bool) throws {
+    init(mode: LightMode, silent: Bool, waitingTimeout: TimeInterval? = nil) throws {
         self.silent = silent
+        self.waitingTimeout = waitingTimeout
         ipc = try LocalIPC().listen(onClose: { [weak self] in
             let finish = self?.onStopped
             self?.onStopped = nil
@@ -76,7 +83,10 @@ final class LightSession {
     private func receive(_ state: LightState, from agent: Agent) {
         guard !shuttingDown else { return }
         if state == .idle, activeAgent != agent { return }
-        if state == lastState, agent == activeAgent { return }
+        if state == lastState, agent == activeAgent {
+            if state == .waiting { scheduleWaitingTimeout() }
+            return
+        }
         activeAgent = state == .idle ? nil : agent
         show(state, from: agent)
     }
@@ -87,10 +97,26 @@ final class LightSession {
         reset?.invalidate()
         bluetooth?.update(state, cue: cue)
         promLight?.update(state, cue: cue)
-        if state == .success || state == .error {
+        if state == .waiting {
+            scheduleWaitingTimeout()
+        } else if state == .success || state == .error {
             reset = Timer.scheduledTimer(withTimeInterval: 4, repeats: false) { [weak self] _ in
                 self?.show(.waiting, from: agent, cue: false)
             }
+        }
+    }
+
+    private func scheduleWaitingTimeout() {
+        reset?.invalidate()
+        reset = waitingTimeout.map { interval in
+            let timer = Timer(timeInterval: interval, repeats: false) { [weak self] _ in
+                guard let self else { return }
+                let agent = self.activeAgent
+                self.activeAgent = nil
+                self.show(.idle, from: agent, cue: false)
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            return timer
         }
     }
 
