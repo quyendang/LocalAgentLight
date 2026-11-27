@@ -1,0 +1,7 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+<defs><linearGradient id="forest" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#344E40"/><stop offset="1" stop-color="#14241F"/></linearGradient></defs><rect width="1024" height="1024" fill="url(#forest)"/>
+<rect x="318" y="168" width="388" height="688" rx="194" fill="#BDEA9E"/><rect x="339" y="189" width="346" height="646" rx="173" fill="#10201B"/>
+<circle cx="512" cy="324" r="76" fill="#E67867"/><circle cx="512" cy="512" r="82" fill="#FFD16E"/><circle cx="512" cy="700" r="76" fill="#BDEA9E"/>
+<path d="M534 452 468 522H506L490 572 556 502H518Z" fill="#152620"/>
+</svg>
